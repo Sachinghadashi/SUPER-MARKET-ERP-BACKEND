@@ -1,12 +1,12 @@
 const Product = require("../models/Product");
 
-// @desc Add new product (Admin only)
+// ================= CREATE PRODUCT =================
 exports.createProduct = async (req, res) => {
   try {
     const { name, barcode, price, stock, category } = req.body;
 
-    const productExists = await Product.findOne({ barcode });
-    if (productExists) {
+    const exists = await Product.findOne({ barcode });
+    if (exists) {
       return res.status(400).json({ message: "Product already exists" });
     }
 
@@ -24,20 +24,22 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// @desc Get all products
+// ================= GET ALL PRODUCTS =================
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find().sort({ name: 1 });
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc Get product by barcode (for billing)
+// ================= GET BY BARCODE =================
 exports.getProductByBarcode = async (req, res) => {
   try {
-    const product = await Product.findOne({ barcode: req.params.barcode });
+    const product = await Product.findOne({
+      barcode: req.params.barcode,
+    });
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -49,7 +51,7 @@ exports.getProductByBarcode = async (req, res) => {
   }
 };
 
-// @desc Update product
+// ================= UPDATE PRODUCT =================
 exports.updateProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -59,21 +61,28 @@ exports.updateProduct = async (req, res) => {
     }
 
     product.name = req.body.name || product.name;
-    product.price = req.body.price || product.price;
+    product.barcode = req.body.barcode || product.barcode;
+    product.price = req.body.price ?? product.price;
     product.stock = req.body.stock ?? product.stock;
     product.category = req.body.category || product.category;
 
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
+    const updated = await product.save();
+    res.json(updated);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc Delete product
+// ================= DELETE PRODUCT =================
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    await product.deleteOne();
     res.json({ message: "Product deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
