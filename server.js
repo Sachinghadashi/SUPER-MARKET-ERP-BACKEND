@@ -1,6 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const axios = require("axios");
+const cron = require("node-cron");
 const connectDB = require("./config/db");
 
 // Route imports
@@ -32,6 +34,18 @@ app.use("/api/reports", reportRoutes);
 // Test route
 app.get("/", (req, res) => {
   res.send("Supermarket ERP API Running");
+});
+
+/* ===============================
+   ⏰ CRON JOB (Every 1 Minute)
+================================ */
+cron.schedule("* * * * *", async () => {
+  try {
+    await axios.get("https://super-market-erp-backend.onrender.com");
+    console.log("🔁 Keep-alive ping successful");
+  } catch (error) {
+    console.error("❌ Keep-alive ping failed:", error.message);
+  }
 });
 
 const PORT = process.env.PORT || 5000;
