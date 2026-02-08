@@ -1,23 +1,22 @@
 const express = require("express");
+
 const {
-  createProduct,
   getProducts,
-  getProductByBarcode,
+  createProduct,
   updateProduct,
   deleteProduct,
 } = require("../controllers/productController");
 
-const { protect, adminOnly } = require("../middleware/authMiddleware");
-
 const router = express.Router();
 
-// Admin only
-router.post("/", protect, adminOnly, createProduct);
-router.put("/:id", protect, adminOnly, updateProduct);
-router.delete("/:id", protect, adminOnly, deleteProduct);
+/* Routes */
 
-// Admin + Cashier
-router.get("/", protect, getProducts);
-router.get("/barcode/:barcode", protect, getProductByBarcode);
+router.get("/", getProducts);
+
+router.post("/", createProduct);
+
+router.put("/:id", updateProduct);
+
+router.delete("/:id", deleteProduct);
 
 module.exports = router;

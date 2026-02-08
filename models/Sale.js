@@ -42,8 +42,9 @@ const saleSchema = new mongoose.Schema(
     /* Bill Info */
     billNumber: {
       type: String,
-      unique: true,
       required: true,
+      unique: true, // ✅ Only one index here
+      trim: true,
     },
 
     /* Customer Info */
@@ -63,22 +64,28 @@ const saleSchema = new mongoose.Schema(
     },
 
     /* Products */
-    items: [saleItemSchema],
+    items: {
+      type: [saleItemSchema],
+      required: true,
+    },
 
     /* Amounts */
     subTotal: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     gstAmount: {
       type: Number,
       default: 0,
+      min: 0,
     },
 
     totalAmount: {
       type: Number,
       required: true,
+      min: 0,
     },
 
     /* Payment */
@@ -104,51 +111,19 @@ const saleSchema = new mongoose.Schema(
   },
 
   {
-    timestamps: true, // ✅ required for analytics
+    timestamps: true, // ✅ createdAt & updatedAt
   }
 );
 
-/* ================= INDEX ================= */
+/* ================= INDEXES ================= */
 
+// For fast date filtering (reports)
 saleSchema.index({ createdAt: 1 });
+
+// For cashier reports
+saleSchema.index({ soldBy: 1 });
+
+// For searching bill
 saleSchema.index({ billNumber: 1 });
 
 module.exports = mongoose.model("Sale", saleSchema);
-
-
-// const mongoose = require("mongoose");
-
-// const saleSchema = new mongoose.Schema(
-//   {
-//     items: [
-//       {
-//         product: {
-//           type: mongoose.Schema.Types.ObjectId,
-//           ref: "Product",
-//           required: true,
-//         },
-//         name: String,
-//         barcode: String,
-//         price: Number,
-//         quantity: Number,
-//         total: Number,
-//       },
-//     ],
-//     totalAmount: {
-//       type: Number,
-//       required: true,
-//     },
-//     paymentMethod: {
-//       type: String,
-//       enum: ["cash", "upi", "card"],
-//       default: "cash",
-//     },
-//     soldBy: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// module.exports = mongoose.model("Sale", saleSchema);
