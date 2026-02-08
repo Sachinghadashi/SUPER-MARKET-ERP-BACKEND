@@ -1,13 +1,12 @@
 const express = require("express");
 const {
-  sendBillEmail,
-  sendBillSMS,
+  sendEmail,
+  sendSMS,
 } = require("../controllers/notifyController");
-const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.post("/email", protect, sendBillEmail);
-router.post("/sms", protect, sendBillSMS);
+router.post("/email", sendEmail);
+router.post("/sms", sendSMS);
 
 module.exports = router;
