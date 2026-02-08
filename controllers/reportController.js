@@ -1,9 +1,9 @@
 const Sale = require("../models/Sale");
 
-// ================= TOTAL REVENUE =================
-exports.getTotalRevenue = async (req, res) => {
+/* TOTAL */
+exports.getTotalReport = async (req, res) => {
   try {
-    const result = await Sale.aggregate([
+    const data = await Sale.aggregate([
       {
         $group: {
           _id: null,
@@ -13,18 +13,16 @@ exports.getTotalRevenue = async (req, res) => {
       },
     ]);
 
-    res.json(
-      result[0] || { totalRevenue: 0, totalBills: 0 }
-    );
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(data[0] || { totalRevenue: 0, totalBills: 0 });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// ================= DATE WISE =================
-exports.getDateWiseSales = async (req, res) => {
+/* DATE */
+exports.getDateReport = async (req, res) => {
   try {
-    const sales = await Sale.aggregate([
+    const data = await Sale.aggregate([
       {
         $group: {
           _id: {
@@ -36,19 +34,19 @@ exports.getDateWiseSales = async (req, res) => {
           totalRevenue: { $sum: "$totalAmount" },
         },
       },
-      { $sort: { _id: 1 } },
+      { $sort: { _id: -1 } },
     ]);
 
-    res.json(sales);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// ================= MONTH WISE =================
-exports.getMonthWiseSales = async (req, res) => {
+/* MONTH */
+exports.getMonthReport = async (req, res) => {
   try {
-    const sales = await Sale.aggregate([
+    const data = await Sale.aggregate([
       {
         $group: {
           _id: {
@@ -58,30 +56,30 @@ exports.getMonthWiseSales = async (req, res) => {
           totalRevenue: { $sum: "$totalAmount" },
         },
       },
-      { $sort: { "_id.year": 1, "_id.month": 1 } },
+      { $sort: { "_id.year": -1, "_id.month": -1 } },
     ]);
 
-    res.json(sales);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-// ================= YEAR WISE =================
-exports.getYearWiseSales = async (req, res) => {
+/* YEAR */
+exports.getYearReport = async (req, res) => {
   try {
-    const sales = await Sale.aggregate([
+    const data = await Sale.aggregate([
       {
         $group: {
           _id: { year: { $year: "$createdAt" } },
           totalRevenue: { $sum: "$totalAmount" },
         },
       },
-      { $sort: { "_id.year": 1 } },
+      { $sort: { "_id.year": -1 } },
     ]);
 
-    res.json(sales);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

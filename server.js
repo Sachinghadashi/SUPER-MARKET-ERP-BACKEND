@@ -17,6 +17,8 @@ const productRoutes = require("./routes/productRoutes");
 const salesRoutes = require("./routes/salesRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const notifyRoutes = require("./routes/notifyRoutes");
+const reportRoutes = require("./routes/reportRoutes");
+
 
 /* 🔍 DEBUG */
 console.log("ROUTES CHECK:", {
@@ -33,6 +35,8 @@ app.use("/api/products", productRoutes);
 app.use("/api/sales", salesRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/notify", notifyRoutes);
+app.use("/api/reports", reportRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Supermarket ERP API Running");

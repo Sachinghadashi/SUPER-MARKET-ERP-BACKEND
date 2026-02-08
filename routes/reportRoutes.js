@@ -1,18 +1,16 @@
 const express = require("express");
 const {
-  getTotalRevenue,
-  getDateWiseSales,
-  getMonthWiseSales,
-  getYearWiseSales,
+  getTotalReport,
+  getDateReport,
+  getMonthReport,
+  getYearReport,
 } = require("../controllers/reportController");
-
-const { protect, adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.get("/total", protect, adminOnly, getTotalRevenue);
-router.get("/date", protect, adminOnly, getDateWiseSales);
-router.get("/month", protect, adminOnly, getMonthWiseSales);
-router.get("/year", protect, adminOnly, getYearWiseSales);
+router.get("/total", getTotalReport);
+router.get("/date", getDateReport);
+router.get("/month", getMonthReport);
+router.get("/year", getYearReport);
 
 module.exports = router;
