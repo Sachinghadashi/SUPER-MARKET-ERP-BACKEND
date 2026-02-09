@@ -35,67 +35,38 @@ const saleItemSchema = new mongoose.Schema({
   },
 });
 
-/* ================= SALE SCHEMA ================= */
+/* ================= SALE ================= */
 
 const saleSchema = new mongoose.Schema(
   {
-    /* Bill Info */
+    // Auto bill number
     billNumber: {
       type: String,
-      unique: true, // ✅ auto-generated in controller
-      trim: true,
+      required: true,
+      unique: true,
     },
 
-    /* Customer Info */
-    customerName: {
-      type: String,
-      default: "Walk-in Customer",
-    },
-
-    customerPhone: {
-      type: String,
-      default: "",
-    },
-
-    customerEmail: {
-      type: String,
-      default: "",
-    },
-
-    /* Products */
     items: {
       type: [saleItemSchema],
       required: true,
     },
 
-    /* Amounts */
     subTotal: {
       type: Number,
-      default: 0, // ✅ not required now
-      min: 0,
+      required: true,
     },
 
     totalAmount: {
       type: Number,
       required: true,
-      min: 0,
     },
 
-    /* Payment */
     paymentMethod: {
       type: String,
       enum: ["cash", "upi", "card", "online"],
       default: "cash",
     },
 
-    /* Status */
-    status: {
-      type: String,
-      enum: ["paid", "cancelled", "refunded"],
-      default: "paid",
-    },
-
-    /* Cashier */
     soldBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -103,15 +74,7 @@ const saleSchema = new mongoose.Schema(
     },
   },
 
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
-
-/* ================= INDEXES ================= */
-
-saleSchema.index({ createdAt: 1 });
-saleSchema.index({ soldBy: 1 });
-saleSchema.index({ billNumber: 1 });
 
 module.exports = mongoose.model("Sale", saleSchema);
