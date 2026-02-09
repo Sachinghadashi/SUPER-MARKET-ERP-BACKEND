@@ -42,8 +42,7 @@ const saleSchema = new mongoose.Schema(
     /* Bill Info */
     billNumber: {
       type: String,
-      required: true,
-      unique: true, // ✅ Only one index here
+      unique: true, // ✅ auto-generated in controller
       trim: true,
     },
 
@@ -72,13 +71,7 @@ const saleSchema = new mongoose.Schema(
     /* Amounts */
     subTotal: {
       type: Number,
-      required: true,
-      min: 0,
-    },
-
-    gstAmount: {
-      type: Number,
-      default: 0,
+      default: 0, // ✅ not required now
       min: 0,
     },
 
@@ -111,19 +104,14 @@ const saleSchema = new mongoose.Schema(
   },
 
   {
-    timestamps: true, // ✅ createdAt & updatedAt
+    timestamps: true,
   }
 );
 
 /* ================= INDEXES ================= */
 
-// For fast date filtering (reports)
 saleSchema.index({ createdAt: 1 });
-
-// For cashier reports
 saleSchema.index({ soldBy: 1 });
-
-// For searching bill
 saleSchema.index({ billNumber: 1 });
 
 module.exports = mongoose.model("Sale", saleSchema);

@@ -16,7 +16,24 @@ exports.getProducts = async (req, res) => {
 /* CREATE */
 exports.createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const { name, barcode, price, stock, category } = req.body;
+
+    // Check duplicate barcode
+    const exists = await Product.findOne({ barcode });
+    if (exists) {
+      return res
+        .status(400)
+        .json({ message: "Barcode already exists" });
+    }
+
+    const product = await Product.create({
+      name,
+      barcode,
+      price: Number(price),
+      stock: Number(stock),
+      category,
+    });
+
     res.status(201).json(product);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -26,9 +43,18 @@ exports.createProduct = async (req, res) => {
 /* UPDATE */
 exports.updateProduct = async (req, res) => {
   try {
+    const { name, barcode, price, stock, category } =
+      req.body;
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        name,
+        barcode,
+        price: Number(price),
+        stock: Number(stock),
+        category,
+      },
       { new: true }
     );
 
@@ -42,11 +68,65 @@ exports.updateProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
+
     res.json({ message: "Product removed" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
+
+
+
+
+// const Product = require("../models/Product");
+
+// /* GET ALL */
+// exports.getProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find().sort({
+//       createdAt: -1,
+//     });
+
+//     res.json(products);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// /* CREATE */
+// exports.createProduct = async (req, res) => {
+//   try {
+//     const product = await Product.create(req.body);
+//     res.status(201).json(product);
+//   } catch (err) {
+//     res.status(400).json({ message: err.message });
+//   }
+// };
+
+// /* UPDATE */
+// exports.updateProduct = async (req, res) => {
+//   try {
+//     const product = await Product.findByIdAndUpdate(
+//       req.params.id,
+//       req.body,
+//       { new: true }
+//     );
+
+//     res.json(product);
+//   } catch (err) {
+//     res.status(400).json({ message: err.message });
+//   }
+// };
+
+// /* DELETE */
+// exports.deleteProduct = async (req, res) => {
+//   try {
+//     await Product.findByIdAndDelete(req.params.id);
+//     res.json({ message: "Product removed" });
+//   } catch (err) {
+//     res.status(400).json({ message: err.message });
+//   }
+// };
 
 
 
