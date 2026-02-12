@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
 
-/* GET ALL */
+/* ================= GET ALL PRODUCTS ================= */
+
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find().sort({
@@ -13,13 +14,35 @@ exports.getProducts = async (req, res) => {
   }
 };
 
-/* CREATE */
+/* ================= GET PRODUCT BY BARCODE ================= */
+
+exports.getProductByBarcode = async (req, res) => {
+  try {
+    const { barcode } = req.params;
+
+    const product = await Product.findOne({ barcode });
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/* ================= CREATE PRODUCT ================= */
+
 exports.createProduct = async (req, res) => {
   try {
     const { name, barcode, price, stock, category } = req.body;
 
     // Check duplicate barcode
     const exists = await Product.findOne({ barcode });
+
     if (exists) {
       return res
         .status(400)
@@ -40,7 +63,8 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-/* UPDATE */
+/* ================= UPDATE PRODUCT ================= */
+
 exports.updateProduct = async (req, res) => {
   try {
     const { name, barcode, price, stock, category } =
@@ -58,16 +82,31 @@ exports.updateProduct = async (req, res) => {
       { new: true }
     );
 
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "Product not found" });
+    }
+
     res.json(product);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
 
-/* DELETE */
+/* ================= DELETE PRODUCT ================= */
+
 exports.deleteProduct = async (req, res) => {
   try {
-    await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: "Product not found" });
+    }
 
     res.json({ message: "Product removed" });
   } catch (err) {
